@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Data Science Team Flowchart</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <div class="mermaid">
+    graph TB
+        subgraph AI_Data_Science_Team
+            subgraph Data_Cleaning_Agent
+                DC_Start[Start] --> DC_Recommend[Recommend Cleaning Steps]
+                DC_Recommend --> DC_Review{Human Review?}
+                DC_Review -->|Yes| DC_Create[Create Cleaner Code]
+                DC_Review -->|No| DC_Recommend
+                DC_Create --> DC_Execute[Execute Cleaner Code]
+                DC_Execute -->|Success| DC_Explain[Explain Cleaning]
+                DC_Execute -->|Error| DC_Fix[Fix Cleaner Code]
+                DC_Fix --> DC_Execute
+            end
+
+            subgraph Data_Wrangling_Agent
+                DW_Start[Start] --> DW_Recommend[Recommend Wrangling Steps]
+                DW_Recommend --> DW_Review{Human Review?}
+                DW_Review -->|Yes| DW_Create[Create Wrangler Code]
+                DW_Review -->|No| DW_Recommend
+                DW_Create --> DW_Execute[Execute Wrangler Code]
+                DW_Execute -->|Success| DW_Explain[Explain Wrangling]
+                DW_Execute -->|Error| DW_Fix[Fix Wrangler Code]
+                DW_Fix --> DW_Execute
+            end
+
+            subgraph Feature_Engineering_Agent
+                FE_Start[Start] --> FE_Recommend[Recommend Engineering Steps]
+                FE_Recommend --> FE_Review{Human Review?}
+                FE_Review -->|Yes| FE_Create[Create Engineer Code]
+                FE_Review -->|No| FE_Recommend
+                FE_Create --> FE_Execute[Execute Engineer Code]
+                FE_Execute -->|Success| FE_Explain[Explain Engineering]
+                FE_Execute -->|Error| FE_Fix[Fix Engineer Code]
+                FE_Fix --> FE_Execute
+            end
+
+            Raw_Data[Raw Data] --> DC_Start
+            DC_Explain --> DW_Start
+            DW_Explain --> FE_Start
+            FE_Explain --> Final[Engineered Features]
+
+            classDef agent fill:#f9f,stroke:#333,stroke-width:2px
+            classDef process fill:#bbf,stroke:#333,stroke-width:1px
+            classDef data fill:#dfd,stroke:#333,stroke-width:1px
+            classDef decision fill:#fdd,stroke:#333,stroke-width:1px
+
+            class Data_Cleaning_Agent,Data_Wrangling_Agent,Feature_Engineering_Agent agent
+            class DC_Recommend,DC_Create,DC_Execute,DC_Fix,DC_Explain process
+            class DW_Recommend,DW_Create,DW_Execute,DW_Fix,DW_Explain process
+            class FE_Recommend,FE_Create,FE_Execute,FE_Fix,FE_Explain process
+            class Raw_Data,Final data
+            class DC_Review,DW_Review,FE_Review decision
+        end
+
+        style AI_Data_Science_Team fill:#fff,stroke:#333,stroke-width:4px
+    </div>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+</body>
+</html>
