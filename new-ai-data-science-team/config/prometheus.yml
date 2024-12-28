@@ -1,0 +1,96 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'ai_data_science_team'
+    static_configs:
+      - targets: ['localhost:9090']
+    metrics_path: '/metrics'
+
+  - job_name: 'mongodb'
+    static_configs:
+      - targets: ['mongodb:27017']
+    metrics_path: '/metrics'
+
+  - job_name: 'postgresql'
+    static_configs:
+      - targets: ['postgresql:5432']
+    metrics_path: '/metrics'
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    metrics_path: '/metrics'
+
+  - job_name: 'elasticsearch'
+    static_configs:
+      - targets: ['elasticsearch:9200']
+    metrics_path: '/_prometheus/metrics'
+
+  - job_name: 'pushgateway'
+    honor_labels: true
+    static_configs:
+      - targets: ['pushgateway:9091']
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
+
+rule_files:
+  - 'rules/*.yml'
+
+# Recording rules for aggregating metrics
+rules:
+  - name: recording_rules
+    interval: 1m
+    rules:
+      - record: job:request_latency_seconds:mean5m
+        expr: rate(request_latency_seconds_sum[5m]) / rate(request_latency_seconds_count[5m])
+
+      - record: job:request_errors:rate5m
+        expr: rate(request_errors_total[5m])
+
+      - record: job:pipeline_latency:mean5m
+        expr: rate(pipeline_latency_seconds_sum[5m]) / rate(pipeline_latency_seconds_count[5m])
+
+# Alerting rules for monitoring system health
+alerts:
+  - name: alerting_rules
+    rules:
+      - alert: HighCPUUsage
+        expr: system_cpu_usage > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: High CPU usage detected
+          description: CPU usage is above 80% for 5 minutes
+
+      - alert: HighMemoryUsage
+        expr: system_memory_usage > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: High memory usage detected
+          description: Memory usage is above 90% for 5 minutes
+
+      - alert: HighPipelineLatency
+        expr: pipeline_latency_seconds > 300
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: High pipeline latency detected
+          description: Pipeline latency is above 5 minutes
+
+      - alert: HighErrorRate
+        expr: rate(pipeline_errors_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: High error rate detected
+          description: Error rate is above 10% for 5 minutes
